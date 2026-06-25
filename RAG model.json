@@ -1,0 +1,233 @@
+{
+  "name": "RAG model",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d4a510e5-98f2-4d07-ad38-911117fb1339",
+      "name": "When chat message received",
+      "webhookId": "aca3b9f8-8a32-49f0-be19-ca47ce9e708b"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Role: You are a helpful and professional AI assistant for [Your Name/Project].\n\nInstructions:\n\nSocial Interaction: Always respond politely to greetings (like \"Hi\", \"Hello\", \"How are you?\"). You can engage in small talk and be friendly.\n\nDocument Queries: When the user asks a specific question about the company or the documents, ALWAYS use the Answer Question tool to retrieve the facts.\n\nContextual Accuracy: If you use the tool and the answer isn't there, politely say you don't know rather than making it up.\n\nTone: Maintain a professional yet approachable tone at all times."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "34c59d99-5126-4ba4-bd54-d70d9cad2ba0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "d589ebe3-f5f9-4ca2-b950-aa6560a739a4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "PxrIaMCQ7BOGu4RC",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "374f1ef9-540e-463f-b288-be717836f4ba",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to retrieve specific facts and financial data from the company's private documents. Only answer based on the provided context to ensure accuracy"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        208
+      ],
+      "id": "33c192f4-c092-40d1-b1be-e1174ea2aca2",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8ntest",
+          "mode": "list",
+          "cachedResultName": "n8ntest"
+        },
+        "options": {
+          "pineconeNamespace": "n8ntest"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        416
+      ],
+      "id": "947f46e1-49c4-4ee5-b0a4-48d602df7520",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Df6QA8SxpU9xecqq",
+          "name": "PineconeApi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        48,
+        576
+      ],
+      "id": "d1f9a08a-99f9-49dc-bc87-8487825b7083",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "PxrIaMCQ7BOGu4RC",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        448,
+        416
+      ],
+      "id": "168ee24b-1d0d-4bd2-b051-9b3f2a5beb8d",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "PxrIaMCQ7BOGu4RC",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1ea28e34-25ac-40a1-b951-332c51166bf3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30a09f913bc2e75c2faeda1b725b58d3945e688b0435660a1180c1e396c19d60"
+  },
+  "id": "qRroArszCznIWdSv",
+  "tags": []
+}
